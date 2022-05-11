@@ -1,0 +1,53 @@
+---
+# tasks file for config_tdp
+
+- name: "{{ mPlayMsg }}{{role_path|basename}} | Initiate local facts"
+  set_fact:
+    mMainMsg: "{{ mPlayMsg }}{{role_path|basename}} | "
+
+- name: "{{ mMainMsg }}Check previous run {{ ansible_env.HOME }}/.ansible/.ansible_{{role_path|basename}}.lock"
+  stat:
+    path: "{{ ansible_env.HOME }}/.ansible/.ansible_{{role_path|basename}}.lock"
+  register: tdp_local_env_lock
+
+- name: "{{ mMainMsg }}Clone tdp-getting-started repo"
+  ansible.builtin.git:
+    repo: https://github.com/TOSIT-IO/tdp-getting-started.git
+    dest: "{{ ansible_env.HOME }}/tdp-getting-started"
+  when: tdp_local_env_lock.stat.exists == False
+
+- name: "{{ mMainMsg }}Setup local env and clone latest tdp-ansible-roles"
+  ansible.builtin.shell:
+    cmd: "/bin/bash ./scripts/setup.sh"
+    chdir: "{{ ansible_env.HOME }}/tdp-getting-started"
+  when: tdp_local_env_lock.stat.exists == False
+
+- name: "{{ mMainMsg }}Copy private key"
+  ansible.builtin.copy:
+    src: "{{ ansible_ssh_private_key_file }}"
+    dest: "{{ ansible_ssh_private_key_file }}"
+    mode: '0600'
+
+- name: "{{ mMainMsg }}Copy inventory"
+  ansible.builtin.copy:
+    src: "{{ inventory_filename }}"
+    dest: "{{ ansible_env.HOME }}/tdp-getting-started/inventory/hosts"
+
+- name: "{{ mMainMsg }}Clean inventory/group_vars/all.yml hosts"
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/tdp-getting-started/inventory/group_vars/all.yml"
+    regex: '.*192.168.56.*'
+    state: absent
+
+- name: Insert/Update configuration using a local file and validate it
+  blockinfile:
+    block: "{{ lookup('file', '{{ hosts_filename }}') }}"
+    path: "{{ ansible_env.HOME }}/tdp-getting-started/inventory/group_vars/all.yml"
+    insertafter: '^hosts:'
+    marker: "### {mark} ANSIBLE MANAGED BLOCK {{role_path|basename}} ###"
+
+- name: "{{ mMainMsg }}Generate lock file {{ ansible_env.HOME }}/.ansible/.ansible_{{role_path|basename}}.lock"
+  ansible.builtin.copy:
+    content: ""
+    dest: "{{ ansible_env.HOME }}/.ansible/.ansible_{{role_path|basename}}.lock"
+  when: tdp_local_env_lock.stat.exists == False

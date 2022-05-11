@@ -1,0 +1,31 @@
+---
+# tasks file for init_hostname
+
+- name: "{{ mPlayMsg }}{{role_path|basename}} | Initiate local facts"
+  set_fact:
+    mMainMsg: "{{ mPlayMsg }}{{role_path|basename}} | "
+
+- name: "{{ mMainMsg }}Configuration du nom"
+  become: true
+  hostname:
+    name: "{{ inventory_hostname }}.{{domain}}"
+    use: systemd
+  register: hostname
+
+- name: "{{ mMainMsg }}Reboot if there was a change"
+  become: true
+  shell: sleep 5 && reboot
+  async: 1200
+  poll: 0
+  ignore_errors: true
+  register: hostname_reboot
+  when: hostname.changed
+
+- name: "{{ mMainMsg }}Wait for the reboot to complete if there was a change."
+  become: true
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 5
+    delay: 10
+    timeout: 300
+  when: hostname_reboot.changed

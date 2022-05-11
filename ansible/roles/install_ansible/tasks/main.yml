@@ -1,0 +1,34 @@
+---
+# tasks file for install_ansible
+
+- name: "{{ mPlayMsg }}{{role_path|basename}} | Initiate local facts"
+  set_fact:
+    mMainMsg: "{{ mPlayMsg }}{{role_path|basename}} | "
+
+- name: "{{ mMainMsg }}Add GPG apt key"
+  become: true
+  apt_key:
+    id: "93C4A3FD7BB9C367"
+    keyserver: keyserver.ubuntu.com
+    state: present
+
+- name: "{{ mMainMsg }}Add repository"
+  become: true
+  apt_repository:
+    repo: "deb http://ppa.launchpad.net/ansible/ansible/ubuntu focal main"
+    filename: "ansible"
+    state: present
+
+- name: "{{ mMainMsg }}Install package"
+  become: true
+  apt:
+    name: [
+      'ansible',
+    ]
+    update_cache: true
+    cache_valid_time: 3600
+    state: present
+  async: 1200
+  poll: 5
+  ignore_errors: true
+  register: install_ansible

@@ -1,0 +1,26 @@
+---
+# tasks file for init_upgrade
+
+- name: "{{ mPlayMsg }}{{role_path|basename}} | Initiate local facts"
+  set_fact:
+    mMainMsg: "{{ mPlayMsg }}{{role_path|basename}} | "
+
+- name: "{{ mMainMsg }}Check previous run {{ ansible_env.HOME }}/.ansible/.ansible_{{role_path|basename}}.lock"
+  stat:
+    path: "{{ ansible_env.HOME }}/.ansible/.ansible_{{role_path|basename}}.lock"
+  register: upgrade_lock
+
+- name: "{{ mMainMsg }}Initial packages upgrade"
+  become: true
+  apt:
+    name: "*"
+    update_cache: yes
+    cache_valid_time: 3600
+    state: latest
+  when: upgrade_lock.stat.exists == False
+
+- name: "{{ mMainMsg }}Generate lock file {{ ansible_env.HOME }}/.ansible/.ansible_{{role_path|basename}}.lock"
+  copy:
+    content: ""
+    dest: "{{ ansible_env.HOME }}/.ansible/.ansible_{{role_path|basename}}.lock"
+  when: upgrade_lock.stat.exists == False

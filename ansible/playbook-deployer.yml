@@ -1,0 +1,35 @@
+# ---
+
+# Initialisation
+
+- name: "Initialisation"
+  hosts: deployer
+  pre_tasks:
+    - name: "{{ ansible_play_name }} | Initiate local facts"
+      set_fact:
+        mPlayMsg: "{{ ansible_play_name }} | "
+  roles:
+    - init_upgrade
+
+# Install
+
+- name: "Install"
+  hosts: deployer
+  pre_tasks:
+    - name: "{{ ansible_play_name }} | Initiate local facts"
+      set_fact:
+        mPlayMsg: "{{ ansible_play_name }} | "
+  roles:
+    - install_base_packages
+    - install_ansible
+
+# Configure
+
+- name: "Configure"
+  hosts: deployer
+  pre_tasks:
+    - name: "{{ ansible_play_name }} | Initiate local facts"
+      set_fact:
+        mPlayMsg: "{{ ansible_play_name }} | "
+  roles:
+    - config_tdp

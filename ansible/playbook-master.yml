@@ -1,0 +1,12 @@
+# ---
+
+# Initialisation
+
+- name: "Initialisation"
+  hosts: master
+  pre_tasks:
+    - name: "{{ ansible_play_name }} | Initiate local facts"
+      set_fact:
+        mPlayMsg: "{{ ansible_play_name }} | "
+  roles:
+    - init_hostname

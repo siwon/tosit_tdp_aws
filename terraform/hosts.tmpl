@@ -1,0 +1,9 @@
+%{ for i in edge_nodes ~}
+  - ["${i.private_ip}", ${i.tags_all.Name}, ${domain}, ${edge_type.default_vcpus}, ${edge_type.memory_size}]
+%{ endfor ~}
+%{ for i in master_nodes ~}
+  - ["${i.private_ip}", ${i.tags_all.Name}, ${domain}, ${master_type.default_vcpus}, ${master_type.memory_size}]
+%{ endfor ~}
+%{ for i in worker_nodes ~}
+  - ["${i.private_ip}", ${i.tags_all.Name}, ${domain}, ${worker_type.default_vcpus}, ${worker_type.memory_size}]
+%{ endfor ~}

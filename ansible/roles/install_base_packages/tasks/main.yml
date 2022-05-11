@@ -1,0 +1,45 @@
+---
+# tasks file for install_base_packages
+
+- name: "{{ mPlayMsg }}{{role_path|basename}} | Initiate local facts"
+  set_fact:
+    mMainMsg: "{{ mPlayMsg }}{{role_path|basename}} | "
+
+- name: "{{ mMainMsg }}Install base packages"
+  become: true
+  apt:
+    name: [
+      'bash-completion',
+      'curl',
+      'git',
+      'htop',
+      'jq',
+      'python3-pip',
+      'rsync',
+      'vim',
+      'wget',
+      'zip',
+    ]
+    update_cache: true
+    cache_valid_time: 3600
+    state: present
+
+- name: "{{ mMainMsg }}Set default python"
+  become: true
+  community.general.alternatives:
+    name: python
+    path: /usr/bin/python3
+    link: /usr/bin/python
+
+- name: "{{ mMainMsg }}Install base python packages"
+  pip:
+    name:
+      - glances
+      - jmespath
+
+- name: Create a directory if it does not exist
+  become: true
+  ansible.builtin.file:
+    path: /etc/bash_completion.d
+    state: directory
+    mode: '0755'

@@ -1,0 +1,155 @@
+[all]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name} ansible_host=${i.public_ip}
+%{ endfor ~}
+%{ for i in master_nodes ~}
+${i.tags_all.Name} ansible_host=${i.private_ip}
+%{ endfor ~}
+%{ for i in worker_nodes ~}
+${i.tags_all.Name} ansible_host=${i.private_ip}
+%{ endfor ~}
+
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_connection=ssh
+ansible_user=${username}
+ansible_ssh_private_key_file=${keyfile}
+domain=${domain}
+
+[edge]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[internal]
+%{ for i in master_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+%{ for i in worker_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[zk]
+%{ for i in master_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[zk_client]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[kdc]
+${master_nodes[0].tags_all.Name}
+
+[ldap]
+${master_nodes[0].tags_all.Name}
+
+[ca]
+${master_nodes[0].tags_all.Name}
+
+[hdfs_nn]
+${master_nodes[0].tags_all.Name}
+${master_nodes[1].tags_all.Name}
+
+[hdfs_jn]
+%{ for i in master_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[hdfs_dn]
+%{ for i in worker_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[yarn_rm]
+${master_nodes[0].tags_all.Name}
+${master_nodes[1].tags_all.Name}
+
+[yarn_nm]
+%{ for i in worker_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[yarn_ats]
+${master_nodes[2].tags_all.Name}
+
+[mapred_jhs]
+${master_nodes[2].tags_all.Name}
+
+[hadoop_client]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+%{ for i in master_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+%{ for i in worker_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[hive_s2]
+${master_nodes[1].tags_all.Name}
+${master_nodes[2].tags_all.Name}
+
+[hive_ms]
+${master_nodes[2].tags_all.Name}
+
+[hive_client]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[hbase_master]
+${master_nodes[0].tags_all.Name}
+${master_nodes[1].tags_all.Name}
+
+[hbase_rs]
+%{ for i in worker_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[hbase_rest]
+${master_nodes[2].tags_all.Name}
+
+[hbase_client]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[phoenix_queryserver_daemon]
+${master_nodes[2].tags_all.Name}
+
+[phoenix_queryserver_client]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[postgresql]
+${master_nodes[2].tags_all.Name}
+
+[postgresql_client:children]
+hive_s2
+ranger_admin
+
+[ranger_admin]
+${master_nodes[2].tags_all.Name}
+
+[ranger_solr]
+${master_nodes[2].tags_all.Name}
+
+[ranger_usersync]
+${master_nodes[2].tags_all.Name}
+
+[spark_hs]
+${master_nodes[2].tags_all.Name}
+
+[spark_client]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[exporter_jmx:children]
+hdfs_nn
+hdfs_dn
+hdfs_jn

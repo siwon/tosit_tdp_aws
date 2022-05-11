@@ -1,0 +1,77 @@
+---
+# tasks file for init_data_disks
+
+- name: "{{ mPlayMsg }}{{role_path|basename}} | Initiate local facts"
+  set_fact:
+    mMainMsg: "{{ mPlayMsg }}{{role_path|basename}} | "
+
+- name: "{{ mMainMsg }}Get device name"
+  shell:
+    cmd: "lsblk -o NAME,UUID,SERIAL | grep {{ data_disk_1_serial | replace('-','') }} | awk '{ print $1 }'"
+  changed_when: false
+  check_mode: false
+  register: volumes_02
+
+- name: "{{ mMainMsg }}Load volumes_03"
+  set_fact:
+    device:  "{{ volumes_02.stdout }}"
+    mountpoint: "/data/disk_1"
+    serial: "{{ data_disk_1_serial | replace('-','') }}"
+  check_mode: false
+  register: volumes_03
+
+- name: "{{ mMainMsg }}Init filesystem"
+  become: true
+  filesystem:
+    dev: /dev/{{ volumes_02.stdout }}
+    fstype: xfs
+    force: false
+
+- name: "{{ mMainMsg }}Get device UUID"
+  shell:
+    cmd: "lsblk -o NAME,UUID,SERIAL | grep {{ data_disk_1_serial | replace('-','') }} | awk '{ print $2 }'"
+  changed_when: False
+  check_mode: false
+  register: volumes_04
+
+- name: "{{ mMainMsg }}Load volumes_05"
+  set_fact:
+    uuid:  "{{ volumes_04.stdout }}"
+    device:  "{{ volumes_02.stdout }}"
+    mountpoint: "/data/disk_1"
+    serial: "{{ data_disk_1_serial | replace('-','') }}"
+  check_mode: false
+  register: volumes_05
+
+- name: "{{ mMainMsg }}Create mountpoints directories"
+  become: true
+  ansible.builtin.file:
+    path: "{{ volumes_05.ansible_facts.mountpoint }}"
+    state: directory
+    mode: '0777'
+
+- name: "{{ mMainMsg }}Mount disks"
+  become: true
+  ansible.posix.mount:
+    path: "{{ volumes_05.ansible_facts.mountpoint }}"
+    src: "UUID={{ volumes_05.ansible_facts.uuid }}"
+    fstype: xfs
+    opts: defaults,nofail
+    passno: "2"
+    backup: yes
+    state: mounted
+
+- name: "{{ mMainMsg }}Chmod mountpoints directories"
+  become: true
+  ansible.builtin.file:
+    path: "{{ volumes_05.ansible_facts.mountpoint }}"
+    state: directory
+    mode: '0777'
+
+- name: "{{ mMainMsg }}Resizefs mountpoints filesystem"
+  become: true
+  filesystem:
+    dev:  "/dev/{{ volumes_05.ansible_facts.device }}"
+    fstype: xfs
+    resizefs: yes
+    force: no
