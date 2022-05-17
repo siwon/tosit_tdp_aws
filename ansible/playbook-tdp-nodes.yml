@@ -3,7 +3,7 @@
 # Initialisation
 
 - name: "Initialisation"
-  hosts: worker
+  hosts: tdp
   pre_tasks:
     - name: "{{ ansible_play_name }} | Initiate local facts"
       set_fact:

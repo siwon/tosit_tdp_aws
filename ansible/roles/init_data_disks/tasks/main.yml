@@ -11,6 +11,7 @@
   changed_when: false
   check_mode: false
   register: volumes_02
+  when: data_disk_1_serial is defined
 
 - name: "{{ mMainMsg }}Load volumes_03"
   set_fact:
@@ -19,6 +20,7 @@
     serial: "{{ data_disk_1_serial | replace('-','') }}"
   check_mode: false
   register: volumes_03
+  when: data_disk_1_serial is defined
 
 - name: "{{ mMainMsg }}Init filesystem"
   become: true
@@ -26,6 +28,7 @@
     dev: /dev/{{ volumes_02.stdout }}
     fstype: xfs
     force: false
+  when: data_disk_1_serial is defined
 
 - name: "{{ mMainMsg }}Get device UUID"
   shell:
@@ -33,6 +36,7 @@
   changed_when: False
   check_mode: false
   register: volumes_04
+  when: data_disk_1_serial is defined
 
 - name: "{{ mMainMsg }}Load volumes_05"
   set_fact:
@@ -42,6 +46,7 @@
     serial: "{{ data_disk_1_serial | replace('-','') }}"
   check_mode: false
   register: volumes_05
+  when: data_disk_1_serial is defined
 
 - name: "{{ mMainMsg }}Create mountpoints directories"
   become: true
@@ -49,6 +54,7 @@
     path: "{{ volumes_05.ansible_facts.mountpoint }}"
     state: directory
     mode: '0777'
+  when: data_disk_1_serial is defined
 
 - name: "{{ mMainMsg }}Mount disks"
   become: true
@@ -60,6 +66,7 @@
     passno: "2"
     backup: yes
     state: mounted
+  when: data_disk_1_serial is defined
 
 - name: "{{ mMainMsg }}Chmod mountpoints directories"
   become: true
@@ -67,6 +74,7 @@
     path: "{{ volumes_05.ansible_facts.mountpoint }}"
     state: directory
     mode: '0777'
+  when: data_disk_1_serial is defined
 
 - name: "{{ mMainMsg }}Resizefs mountpoints filesystem"
   become: true
@@ -75,3 +83,4 @@
     fstype: xfs
     resizefs: yes
     force: no
+  when: data_disk_1_serial is defined
