@@ -153,3 +153,8 @@ ${i.tags_all.Name}
 hdfs_nn
 hdfs_dn
 hdfs_jn
+
+[knox]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
