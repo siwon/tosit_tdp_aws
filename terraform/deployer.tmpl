@@ -14,7 +14,7 @@ all:
       children:
         edge:
           hosts:
-%{ for i in master_nodes ~}
+%{ for i in edge_nodes ~}
             ${i.tags_all.Name}:
               ansible_host: ${i.private_ip}
 %{ endfor ~}
