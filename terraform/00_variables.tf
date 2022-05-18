@@ -21,7 +21,7 @@ variable "nb_edge" {
 
 variable "edge_instance_type" {
   description = "The type of instance for edge server"
-  default     = "t3a.nano"
+  default     = "t3a.large"
 }
 
 variable "nb_worker" {
@@ -31,7 +31,7 @@ variable "nb_worker" {
 
 variable "worker_instance_type" {
   description = "The type of instance for worker server"
-  default     = "t3a.nano"
+  default     = "t3a.large"
 }
 
 variable "data_disk_size" {
