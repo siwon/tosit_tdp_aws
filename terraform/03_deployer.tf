@@ -6,7 +6,7 @@ module "ec2_deployer" {
   name = "srv-${var.project}-deployer-${terraform.workspace}"
 
   ami           = data.aws_ami.debian.id
-  instance_type = "t3a.nano"
+  instance_type = "t3a.large"
   key_name      = aws_key_pair.main.key_name
   monitoring    = true
   vpc_security_group_ids = [
