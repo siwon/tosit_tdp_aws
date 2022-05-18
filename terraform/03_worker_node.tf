@@ -1,8 +1,4 @@
 
-locals {
-  worker_instance_type = "t3a.nano"
-}
-
 module "ec2_worker" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 3.0"
@@ -12,7 +8,7 @@ module "ec2_worker" {
   name = "srv-${var.project}-worker-${format("%03d", count.index)}-${terraform.workspace}"
 
   ami           = data.aws_ami.centos.id
-  instance_type = local.worker_instance_type
+  instance_type = var.worker_instance_type
   key_name      = aws_key_pair.main.key_name
   monitoring    = true
   vpc_security_group_ids = [
@@ -35,7 +31,7 @@ module "ec2_worker" {
 }
 
 data "aws_ec2_instance_type" "ec2_worker" {
-  instance_type = local.worker_instance_type
+  instance_type = var.worker_instance_type
 }
 
 resource "aws_ebs_volume" "data_disk_1" {

@@ -1,8 +1,4 @@
 
-locals {
-  master_instance_type = "t3.small"
-}
-
 module "ec2_master" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 3.0"
@@ -12,7 +8,7 @@ module "ec2_master" {
   name = "srv-${var.project}-master-${format("%03d", count.index)}-${terraform.workspace}"
 
   ami           = data.aws_ami.centos.id
-  instance_type = local.master_instance_type
+  instance_type = var.master_instance_type
   key_name      = aws_key_pair.main.key_name
   monitoring    = true
   vpc_security_group_ids = [
@@ -31,5 +27,5 @@ module "ec2_master" {
 }
 
 data "aws_ec2_instance_type" "ec2_master" {
-  instance_type = local.master_instance_type
+  instance_type = var.master_instance_type
 }

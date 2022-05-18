@@ -1,8 +1,4 @@
 
-locals {
-  edge_instance_type = "t3a.nano"
-}
-
 module "ec2_edge" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 3.0"
@@ -12,7 +8,7 @@ module "ec2_edge" {
   name = "srv-${var.project}-edge-${format("%03d", count.index)}-${terraform.workspace}"
 
   ami           = data.aws_ami.centos.id
-  instance_type = local.edge_instance_type
+  instance_type = var.edge_instance_type
   key_name      = aws_key_pair.main.key_name
   monitoring    = true
   vpc_security_group_ids = [
@@ -31,5 +27,5 @@ module "ec2_edge" {
 }
 
 data "aws_ec2_instance_type" "ec2_edge" {
-  instance_type = local.edge_instance_type
+  instance_type = var.edge_instance_type
 }
