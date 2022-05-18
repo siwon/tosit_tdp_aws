@@ -149,12 +149,28 @@ ${master_nodes[2].tags_all.Name}
 ${i.tags_all.Name}
 %{ endfor ~}
 
-[exporter_jmx:children]
-hdfs_nn
-hdfs_dn
-hdfs_jn
+[spark3_hs]
+${master_nodes[2].tags_all.Name}
+
+[spark3_client]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
+
+[spark_client:children]
+livy_server
+
+[livy_server]
+%{ for i in edge_nodes ~}
+${i.tags_all.Name}
+%{ endfor ~}
 
 [knox]
 %{ for i in edge_nodes ~}
 ${i.tags_all.Name}
 %{ endfor ~}
+
+[exporter_jmx:children]
+hdfs_nn
+hdfs_dn
+hdfs_jn
