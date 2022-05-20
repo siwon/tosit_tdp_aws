@@ -28,7 +28,3 @@
     update_cache: true
     cache_valid_time: 3600
     state: present
-  async: 1200
-  poll: 5
-  ignore_errors: true
-  register: install_ansible
