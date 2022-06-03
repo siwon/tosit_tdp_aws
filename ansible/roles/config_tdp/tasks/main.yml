@@ -18,7 +18,7 @@
 
 - name: "{{ mMainMsg }}Setup local env and clone latest tdp-ansible-roles"
   ansible.builtin.shell:
-    cmd: "/bin/bash ./scripts/setup.sh"
+    cmd: "/bin/bash ./scripts/setup.sh -r latest"
     chdir: "{{ ansible_env.HOME }}/tdp-getting-started"
   when: tdp_local_env_lock.stat.exists == False
 
