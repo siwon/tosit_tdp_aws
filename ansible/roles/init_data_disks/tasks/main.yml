@@ -42,7 +42,7 @@
   set_fact:
     uuid:  "{{ volumes_04.stdout }}"
     device:  "{{ volumes_02.stdout }}"
-    mountpoint: "/data/disk_1"
+    mountpoint: "/var/lib/hdfs/dn"
     serial: "{{ data_disk_1_serial | replace('-','') }}"
   check_mode: false
   register: volumes_05
