@@ -11,3 +11,4 @@
   roles:
     - init_hostname
     - init_data_disks
+    - init_disable_ipv6
